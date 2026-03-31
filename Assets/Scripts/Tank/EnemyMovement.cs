@@ -41,8 +41,8 @@ public class EnemyMovement : MonoBehaviour {
     void OnEnable() {
         rb.isKinematic = false;
 
-        rb.position = initialPos;
-        rb.rotation = initialRot;
+        navAgent.Warp(initialPos);
+        transform.rotation = initialRot;
 
         follow = false;
         fresh = true;

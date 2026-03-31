@@ -3,7 +3,8 @@ using TMPro;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
-    public Highscores highscores;
+    public Highscores timedHighscores;
+    public Highscores endlessHighscores;
 
     public TextMeshProUGUI messageText;
     public TextMeshProUGUI timerText;
@@ -13,6 +14,7 @@ public class GameManager : MonoBehaviour {
     public TextMeshProUGUI highscoresText;
 
     public Button playButton;
+    public Button endlessButton;
     public Button highscoresButton;
     
     public Transform destructableScenery;
@@ -20,6 +22,7 @@ public class GameManager : MonoBehaviour {
     public GameObject[] tanks;
     float gameTime = 0f;
     public float GameTime { get {return gameTime;} }
+    int tanksDestroyed = 0;
 
     public Material neutralMat;
     public Material enemyMat;
@@ -29,6 +32,7 @@ public class GameManager : MonoBehaviour {
     public bool InGame { get {return inGame;} }
 
     bool keyDown;
+    bool endless;
 
     AudioSource player;
     public AudioClip pregameMusic;
@@ -53,6 +57,7 @@ public class GameManager : MonoBehaviour {
 
         highscorePanel.SetActive(false);
         playButton.gameObject.SetActive(true);
+        endlessButton.gameObject.SetActive(true);
         highscoresButton.gameObject.SetActive(true);
 
         SetTanksActive(false);
@@ -60,10 +65,21 @@ public class GameManager : MonoBehaviour {
 
     void Update() {
         if (Input.GetKeyUp(KeyCode.Escape)) {
-            Application.Quit();
+            if (inGame) {
+                inGame = false;
+                
+                if (endless) Endless();
+                else Ingame();
+            }
+            else {
+                Application.Quit();
+            }
         }
 
-        if (inGame) Ingame();
+        if (inGame) {
+            if (endless) Endless();
+            else Ingame();
+        }
         else Pregame();
     }
 
@@ -71,18 +87,37 @@ public class GameManager : MonoBehaviour {
         messageText.gameObject.SetActive(!messageText.gameObject.activeSelf);
         highscorePanel.SetActive(!highscorePanel.gameObject.activeSelf);
 
-        string text = "";
-        for (int i = 0; i < highscores.scores.Length; i++) {
-            int seconds = highscores.scores[i];
+        ViewHighscores();
+    }
 
-            if (highscores.scores[i] == 0) text += "--:--\n";
-            else text += string.Format("{0:00}:{1:00}\n", seconds / 60, seconds % 60);
+    void ViewHighscores() {
+        string text = "";
+        
+        if (endless) {
+            for (int i = 0; i < endlessHighscores.scores.Length; i++) {
+                int score = endlessHighscores.scores[i];
+
+                if (endlessHighscores.scores[i] == 0) text += "--\n";
+                else text += string.Format("{0:00}\n", score);
+            }
         }
+        else {
+            for (int i = 0; i < timedHighscores.scores.Length; i++) {
+                int seconds = timedHighscores.scores[i];
+
+                if (timedHighscores.scores[i] == 0) text += "--:--\n";
+                else text += string.Format("{0:00}:{1:00}\n", seconds / 60, seconds % 60);
+            }
+        }
+        
         highscoresText.text = text;
     }
 
-    public void Play() {
-        keyDown = true;
+    public void Play(bool endless) {
+        this.endless = endless;
+
+        if (!highscorePanel.activeSelf) keyDown = true;
+        else ViewHighscores();
     }
 
     void Pregame() {
@@ -99,6 +134,7 @@ public class GameManager : MonoBehaviour {
 
             highscorePanel.SetActive(false);
             playButton.gameObject.SetActive(false);
+            endlessButton.gameObject.SetActive(false);
             highscoresButton.gameObject.SetActive(false);
 
             messageText.gameObject.SetActive(false);
@@ -129,14 +165,18 @@ public class GameManager : MonoBehaviour {
 
         timerText.text = string.Format("{0:00}:{1:00}", seconds / 60, seconds % 60);
 
-        if (IsPlayerDead() || OneTankLeft()) {
+        if (IsPlayerDead() || TanksLeft() <= 1 || inGame == false) {
             messageText.gameObject.SetActive(true);
-            inGame = false;
 
             player.clip = pregameMusic;
             player.Play();
 
-            if (IsPlayerDead()) {
+            if (inGame == false) {
+                timerText.text = "";
+                totalTime.text = "";
+                messageText.text = "Tankinator.";
+            }
+            else if (IsPlayerDead()) {
                 messageText.text = "Tankinator-ed.";
             }
             else {
@@ -153,14 +193,65 @@ public class GameManager : MonoBehaviour {
 
                 totalTime.text = string.Format("{0:00}:{1:00}", seconds / 60, seconds % 60);
 
-                highscores.AddScore(seconds);
-                highscores.SaveScoresToFile();
+                timedHighscores.AddScore(seconds);
+                timedHighscores.SaveScoresToFile();
             }
 
             playButton.gameObject.SetActive(true);
+            endlessButton.gameObject.SetActive(true);
             highscoresButton.gameObject.SetActive(true);
 
             SetTanksActive(false);
+            inGame = false;
+        }
+    }
+
+    void Endless() {
+        if (TanksLeft() < tanks.Length) {
+            for (int i = 0; i < tanks.Length; i++) {
+                GameObject tank;
+                if (!tanks[i].activeSelf && !tanks[i].CompareTag("Player")) {
+                    tanksDestroyed += 1;
+
+                    tank = tanks[i];
+                    tank.SetActive(true);
+
+                    tank.GetComponent<EnemyMovement>().enabled = false;
+                    tank.GetComponent<EnemyShooting>().enabled = false;
+
+                    tank.GetComponent<EnemyMovement>().enabled = true;
+                    tank.GetComponent<EnemyShooting>().enabled = true;
+                }
+            }
+        }
+
+        timerText.text = tanksDestroyed.ToString();
+        
+        if (IsPlayerDead() || inGame == false) {
+            messageText.gameObject.SetActive(true);
+
+            player.clip = pregameMusic;
+            player.Play();
+
+            if (inGame == false) {
+                timerText.text = "";
+                totalTime.text = "";
+                messageText.text = "Tankinator.";
+            }
+            else if (IsPlayerDead()) {
+                messageText.text = "Tankinator-ed.";
+            }
+
+            endlessHighscores.AddScore(tanksDestroyed);
+            endlessHighscores.SaveScoresToFile();
+
+            playButton.gameObject.SetActive(true);
+            endlessButton.gameObject.SetActive(true);
+            highscoresButton.gameObject.SetActive(true);
+
+            SetTanksActive(false);
+            inGame = false;
+            tanksDestroyed = 0;
         }
     }
 
@@ -187,14 +278,14 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    bool OneTankLeft() {
+    int TanksLeft() {
         int tankCount = 0;
 
         for (int i = 0; i < tanks.Length; i++) {
             if (tanks[i].activeSelf) tankCount++;
         }
 
-        return tankCount <= 1;
+        return tankCount;
     }
 
     bool IsPlayerDead() {
