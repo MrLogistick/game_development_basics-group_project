@@ -7,6 +7,7 @@ public class Highscores : MonoBehaviour {
     string currentDirectory;
 
     public string scoreFileName = "highscores.txt";
+    public bool highestScoreWins = false;
 
     void Start() {
         currentDirectory = Application.dataPath;
@@ -65,7 +66,7 @@ public class Highscores : MonoBehaviour {
                 scores[scoreCount] = readScore;
             }
             else {
-                Debug.Log($"Invalid line in scores file at {scoreCount}, using defaul value.", this);
+                Debug.Log($"Invalid line in scores file at {scoreCount}, using default value.", this);
                 scores[scoreCount] = 0;
             }
 
@@ -93,13 +94,21 @@ public class Highscores : MonoBehaviour {
         int desiredIndex = -1;
 
         for (int i = 0; i < scores.Length; i++) {
-            if (scores[i] > newScore || scores[i] == 0) {
-                desiredIndex = i;
-                break;
+            if (highestScoreWins) {
+                if (scores[i] < newScore) {
+                    desiredIndex = i;
+                    break;
+                }
+            }
+            else {
+                if (scores[i] > newScore || scores[i] == 0) {
+                    desiredIndex = i;
+                    break;
+                }
             }
         }
 
-        if ( desiredIndex < 0) {
+        if (desiredIndex < 0) {
             Debug.Log("Score of " + newScore + " not high enough for scores list.", this);
             return;
         }
