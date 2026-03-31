@@ -124,7 +124,6 @@ public class EnemyMovement : MonoBehaviour {
         Quaternion flatTargetRot = Quaternion.Euler(0f, targetRot.eulerAngles.y, 0f);
 
         if (Quaternion.Angle(transform.rotation, flatTargetRot) > 1f) {
-            print(Quaternion.Angle(transform.rotation, flatTargetRot));
             transform.rotation = Quaternion.RotateTowards(transform.rotation, flatTargetRot, turnSpeed * Time.deltaTime);
         }
         else {
