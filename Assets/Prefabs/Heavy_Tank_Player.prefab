@@ -105,7 +105,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 8d99f6689328c0c479f78811db5e37ec, type: 2}
     - target: {fileID: 919132149155446097, guid: 63f9240deebb8c344abfe703d0eacd96, type: 3}
       propertyPath: m_Name
-      value: unit_Tank_Heavy_A_yup
+      value: Heavy_Tank_Player
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 63f9240deebb8c344abfe703d0eacd96, type: 3}
       propertyPath: m_TagString
@@ -203,7 +203,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3689911153903597717}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7501966ca814e234d891a4bad0e47ea2, type: 3}
   m_Name: 
@@ -217,7 +217,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3689911153903597717}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1fb8d23d5e923464bb9daa6081abed02, type: 3}
   m_Name: 
@@ -249,7 +249,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3689911153903597717}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9c3881cd047cfd64c8c7bbb411c77e86, type: 3}
   m_Name: 
@@ -284,7 +284,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 479d888bae0b065438f7ebf25f6b4872, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meshes: []
+  meshes:
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!4 &4922339832078765966 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -307385472946124214, guid: 63f9240deebb8c344abfe703d0eacd96, type: 3}

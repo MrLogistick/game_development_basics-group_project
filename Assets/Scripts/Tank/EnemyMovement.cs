@@ -26,7 +26,6 @@ public class EnemyMovement : MonoBehaviour {
     Quaternion initialRot;
 
     void Awake() {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
         navAgent = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
         col = GetComponent<SphereCollider>();
@@ -39,7 +38,15 @@ public class EnemyMovement : MonoBehaviour {
     }
 
     void OnEnable() {
+        try
+        {
+            player = GameObject.FindGameObjectWithTag("Player").transform;
+        }
+        catch {Debug.Log("Couldent find player"); }
+
         rb.isKinematic = false;
+        navAgent.enabled = true;
+        navAgent.isStopped = false;
 
         navAgent.Warp(initialPos);
         transform.rotation = initialRot;
@@ -48,8 +55,14 @@ public class EnemyMovement : MonoBehaviour {
         fresh = true;
     }
 
-    void OnDisable() {
+    void OnDisable()
+    {
         rb.isKinematic = true;
+        navAgent.isStopped = true;
+        navAgent.enabled = false;
+
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
     }
 
     void OnTriggerEnter(Collider other) {
