@@ -16,18 +16,16 @@ public class GameManager : MonoBehaviour {
     public Button playButton;
     public Button endlessButton;
     public Button highscoresButton;
-<<<<<<< Updated upstream
-    
-=======
+  
     public Button TankSelectionButton;
 
     public GameObject[] enemyTanks;
     public GameObject TankSelectionPanel;
     public GameObject LighTank;
-    public GameObject MediumTank;
-    public GameObject HeavyTank;
 
->>>>>>> Stashed changes
+    public GameObject MeduimTank;
+    public GameObject HeavyTank;
+  
     public Transform destructableScenery;
 
     public GameObject[] tanks;
@@ -70,6 +68,7 @@ public class GameManager : MonoBehaviour {
         playButton.gameObject.SetActive(true);
         endlessButton.gameObject.SetActive(true);
         highscoresButton.gameObject.SetActive(true);
+        TankSelectionButton.gameObject.SetActive(true);
 
         SetTanksActive(false);
     }
@@ -147,6 +146,7 @@ public class GameManager : MonoBehaviour {
             playButton.gameObject.SetActive(false);
             endlessButton.gameObject.SetActive(false);
             highscoresButton.gameObject.SetActive(false);
+            TankSelectionButton.gameObject.SetActive(false);
 
             messageText.gameObject.SetActive(false);
 
@@ -158,7 +158,21 @@ public class GameManager : MonoBehaviour {
             SetTanksActive(true);
             
             for (int i = 0; i < tanks.Length; i++) {
-                tanks[i].SetActive(true);
+                if (i == selectedTankIndex)
+                {
+                    tanks[i].tag = "Player";
+                    tanks[i].SetActive(true);
+                }
+                else
+                {
+                    tanks[i].tag = "Untagged";
+                    tanks[i].SetActive(false);
+                }
+            }
+
+            foreach (GameObject enemy in enemyTanks)
+            {
+                enemy.SetActive(true);
             }
 
             for (int i = 0; i < destructableScenery.childCount; i++) {
@@ -211,6 +225,7 @@ public class GameManager : MonoBehaviour {
             playButton.gameObject.SetActive(true);
             endlessButton.gameObject.SetActive(true);
             highscoresButton.gameObject.SetActive(true);
+            TankSelectionButton.gameObject.SetActive(true);
 
             SetTanksActive(false);
             inGame = false;
@@ -259,6 +274,7 @@ public class GameManager : MonoBehaviour {
             playButton.gameObject.SetActive(true);
             endlessButton.gameObject.SetActive(true);
             highscoresButton.gameObject.SetActive(true);
+            TankSelectionButton.gameObject.SetActive(true);
 
             SetTanksActive(false);
             inGame = false;
@@ -266,20 +282,32 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    void SetTanksActive(bool active) {
-        for (int i = 0; i < tanks.Length; i++) {
+    void SetTanksActive(bool active)
+    {
+        for (int i = 0; i < tanks.Length; i++)
+        {
             var tank = tanks[i];
             var materialAccess = tank.GetComponent<MaterialAccess>();
 
-            foreach (MeshRenderer rend in materialAccess.meshes) {
-                if (tank.CompareTag("Player")) {
+            bool isPlayer = (i == selectedTankIndex);
+
+            foreach (MeshRenderer rend in materialAccess.meshes)
+            {
+
+                if (isPlayer)
+                {
+                    tank.tag = "Player";
                     rend.material = active ? playerMat : neutralMat;
+
                     tank.GetComponent<TankMovement>().enabled = active;
                     tank.GetComponent<TankAim>().enabled = active;
                     tank.GetComponent<TankShooting>().enabled = active;
                 }
-                else {
+                else
+                {
+                    tank.tag = "Enemy";
                     rend.material = active ? enemyMat : neutralMat;
+
                     tank.GetComponent<EnemyMovement>().enabled = active;
                     tank.GetComponent<EnemyShooting>().enabled = active;
                 }
@@ -315,8 +343,6 @@ public class GameManager : MonoBehaviour {
 
         return false;
     }
-<<<<<<< Updated upstream
-=======
 
     public void OnTankSelection()
     {
@@ -345,7 +371,7 @@ public class GameManager : MonoBehaviour {
     }
     public void SelectMainTank() {
         selectedTankIndex = 2;
-        MediumTank.tag = "player";
+        MeduimTank.tag = "player";
         CloseTankSeletion();
     }
     public void SelectHeavyTank() {
@@ -353,5 +379,4 @@ public class GameManager : MonoBehaviour {
         HeavyTank.tag = "player";
         CloseTankSeletion();
     }
->>>>>>> Stashed changes
 }
