@@ -16,14 +16,16 @@ public class GameManager : MonoBehaviour {
     public Button playButton;
     public Button endlessButton;
     public Button highscoresButton;
+  
     public Button TankSelectionButton;
 
     public GameObject[] enemyTanks;
     public GameObject TankSelectionPanel;
     public GameObject LighTank;
+
     public GameObject MeduimTank;
     public GameObject HeavyTank;
-
+  
     public Transform destructableScenery;
 
     public GameObject[] tanks;
