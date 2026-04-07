@@ -16,7 +16,18 @@ public class GameManager : MonoBehaviour {
     public Button playButton;
     public Button endlessButton;
     public Button highscoresButton;
+<<<<<<< Updated upstream
     
+=======
+    public Button TankSelectionButton;
+
+    public GameObject[] enemyTanks;
+    public GameObject TankSelectionPanel;
+    public GameObject LighTank;
+    public GameObject MediumTank;
+    public GameObject HeavyTank;
+
+>>>>>>> Stashed changes
     public Transform destructableScenery;
 
     public GameObject[] tanks;
@@ -304,4 +315,43 @@ public class GameManager : MonoBehaviour {
 
         return false;
     }
+<<<<<<< Updated upstream
+=======
+
+    public void OnTankSelection()
+    {
+        TankSelectionPanel.SetActive(true);
+        TankSelectionButton.gameObject.SetActive(false);
+        playButton.gameObject.SetActive(false);
+        endlessButton.gameObject.SetActive(false);
+        highscoresButton.gameObject.SetActive(false);
+    }
+
+    void CloseTankSeletion()
+    {
+        TankSelectionPanel.SetActive(false);
+        TankSelectionButton.gameObject.SetActive(true);
+        playButton.gameObject.SetActive(true);
+        endlessButton.gameObject.SetActive(true);
+        highscoresButton.gameObject.SetActive(true);
+    }
+
+    int selectedTankIndex = 0;
+    public void SelectLightTank()
+    {
+        selectedTankIndex = 1;
+        LighTank.tag = "player";
+        CloseTankSeletion();
+    }
+    public void SelectMainTank() {
+        selectedTankIndex = 2;
+        MediumTank.tag = "player";
+        CloseTankSeletion();
+    }
+    public void SelectHeavyTank() {
+        selectedTankIndex = 3;
+        HeavyTank.tag = "player";
+        CloseTankSeletion();
+    }
+>>>>>>> Stashed changes
 }
