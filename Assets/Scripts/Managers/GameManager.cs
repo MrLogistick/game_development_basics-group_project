@@ -3,7 +3,8 @@ using TMPro;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
-    public Highscores highscores;
+    public Highscores timedHighscores;
+    public Highscores endlessHighscores;
 
     public TextMeshProUGUI messageText;
     public TextMeshProUGUI timerText;
@@ -13,13 +14,24 @@ public class GameManager : MonoBehaviour {
     public TextMeshProUGUI highscoresText;
 
     public Button playButton;
+    public Button endlessButton;
     public Button highscoresButton;
-    
+  
+    public Button TankSelectionButton;
+
+    public GameObject[] enemyTanks;
+    public GameObject TankSelectionPanel;
+    public GameObject LightTank;
+
+    public GameObject MeduimTank;
+    public GameObject HeavyTank;
+  
     public Transform destructableScenery;
 
     public GameObject[] tanks;
     float gameTime = 0f;
     public float GameTime { get {return gameTime;} }
+    int tanksDestroyed = 0;
 
     public Material neutralMat;
     public Material enemyMat;
@@ -29,6 +41,7 @@ public class GameManager : MonoBehaviour {
     public bool InGame { get {return inGame;} }
 
     bool keyDown;
+    bool endless;
 
     AudioSource player;
     public AudioClip pregameMusic;
@@ -53,17 +66,30 @@ public class GameManager : MonoBehaviour {
 
         highscorePanel.SetActive(false);
         playButton.gameObject.SetActive(true);
+        endlessButton.gameObject.SetActive(true);
         highscoresButton.gameObject.SetActive(true);
+        TankSelectionButton.gameObject.SetActive(true);
 
-        SetTanksActive(false);
+        SetTanksActive(tanks.Length, false);
     }
 
     void Update() {
         if (Input.GetKeyUp(KeyCode.Escape)) {
-            Application.Quit();
+            if (inGame) {
+                inGame = false;
+                
+                if (endless) Endless();
+                else Ingame();
+            }
+            else {
+                Application.Quit();
+            }
         }
 
-        if (inGame) Ingame();
+        if (inGame) {
+            if (endless) Endless();
+            else Ingame();
+        }
         else Pregame();
     }
 
@@ -71,18 +97,37 @@ public class GameManager : MonoBehaviour {
         messageText.gameObject.SetActive(!messageText.gameObject.activeSelf);
         highscorePanel.SetActive(!highscorePanel.gameObject.activeSelf);
 
-        string text = "";
-        for (int i = 0; i < highscores.scores.Length; i++) {
-            int seconds = highscores.scores[i];
+        ViewHighscores();
+    }
 
-            if (highscores.scores[i] == 0) text += "--:--\n";
-            else text += string.Format("{0:00}:{1:00}\n", seconds / 60, seconds % 60);
+    void ViewHighscores() {
+        string text = "";
+        
+        if (endless) {
+            for (int i = 0; i < endlessHighscores.scores.Length; i++) {
+                int score = endlessHighscores.scores[i];
+
+                if (endlessHighscores.scores[i] == 0) text += "--\n";
+                else text += string.Format("{0:00}\n", score);
+            }
         }
+        else {
+            for (int i = 0; i < timedHighscores.scores.Length; i++) {
+                int seconds = timedHighscores.scores[i];
+
+                if (timedHighscores.scores[i] == 0) text += "--:--\n";
+                else text += string.Format("{0:00}:{1:00}\n", seconds / 60, seconds % 60);
+            }
+        }
+        
         highscoresText.text = text;
     }
 
-    public void Play() {
-        keyDown = true;
+    public void Play(bool endless) {
+        this.endless = endless;
+
+        if (!highscorePanel.activeSelf) keyDown = true;
+        else ViewHighscores();
     }
 
     void Pregame() {
@@ -99,7 +144,9 @@ public class GameManager : MonoBehaviour {
 
             highscorePanel.SetActive(false);
             playButton.gameObject.SetActive(false);
+            endlessButton.gameObject.SetActive(false);
             highscoresButton.gameObject.SetActive(false);
+            TankSelectionButton.gameObject.SetActive(false);
 
             messageText.gameObject.SetActive(false);
 
@@ -108,10 +155,24 @@ public class GameManager : MonoBehaviour {
             gameTime = 0;
             inGame = true;
 
-            SetTanksActive(true);
+            SetTanksActive(tanks.Length, true);
             
             for (int i = 0; i < tanks.Length; i++) {
-                tanks[i].SetActive(true);
+                if (i == selectedTankIndex)
+                {
+                    tanks[i].tag = "Player";
+                    tanks[i].SetActive(true);
+                }
+                else
+                {
+                    tanks[i].tag = "Untagged";
+                    tanks[i].SetActive(false);
+                }
+            }
+
+            foreach (GameObject enemy in enemyTanks)
+            {
+                enemy.SetActive(true);
             }
 
             for (int i = 0; i < destructableScenery.childCount; i++) {
@@ -129,14 +190,18 @@ public class GameManager : MonoBehaviour {
 
         timerText.text = string.Format("{0:00}:{1:00}", seconds / 60, seconds % 60);
 
-        if (IsPlayerDead() || OneTankLeft()) {
+        if (IsPlayerDead() || TanksLeft() <= 1 || inGame == false) {
             messageText.gameObject.SetActive(true);
-            inGame = false;
 
             player.clip = pregameMusic;
             player.Play();
 
-            if (IsPlayerDead()) {
+            if (inGame == false) {
+                timerText.text = "";
+                totalTime.text = "";
+                messageText.text = "Tankinator.";
+            }
+            else if (IsPlayerDead()) {
                 messageText.text = "Tankinator-ed.";
             }
             else {
@@ -153,48 +218,139 @@ public class GameManager : MonoBehaviour {
 
                 totalTime.text = string.Format("{0:00}:{1:00}", seconds / 60, seconds % 60);
 
-                highscores.AddScore(seconds);
-                highscores.SaveScoresToFile();
+                timedHighscores.AddScore(seconds);
+                timedHighscores.SaveScoresToFile();
             }
 
             playButton.gameObject.SetActive(true);
+            endlessButton.gameObject.SetActive(true);
             highscoresButton.gameObject.SetActive(true);
+            TankSelectionButton.gameObject.SetActive(true);
 
-            SetTanksActive(false);
+            SetTanksActive(tanks.Length, false);
+            inGame = false;
         }
     }
 
-    void SetTanksActive(bool active) {
-        for (int i = 0; i < tanks.Length; i++) {
-            var tank = tanks[i];
-            var materialAccess = tank.GetComponent<MaterialAccess>();
+    void Endless() {
+        if (TanksLeft() < tanks.Length) {
+            for (int i = 0; i < tanks.Length; i++) {
+                GameObject tank;
+                if (!tanks[i].activeSelf && !tanks[i].CompareTag("Player")) {
+                    tanksDestroyed += 1;
 
-            foreach (MeshRenderer rend in materialAccess.meshes) {
-                if (tank.CompareTag("Player")) {
-                    rend.material = active ? playerMat : neutralMat;
-                    tank.GetComponent<TankMovement>().enabled = active;
-                    tank.GetComponent<TankAim>().enabled = active;
-                    tank.GetComponent<TankShooting>().enabled = active;
-                }
-                else {
-                    rend.material = active ? enemyMat : neutralMat;
-                    tank.GetComponent<EnemyMovement>().enabled = active;
-                    tank.GetComponent<EnemyShooting>().enabled = active;
-                }
+                    tank = tanks[i];
+                    tank.SetActive(true);
 
-                tank.GetComponent<TankHealth>().enabled = active;
+                    tank.GetComponent<EnemyMovement>().enabled = false;
+                    tank.GetComponent<EnemyShooting>().enabled = false;
+
+                    tank.GetComponent<EnemyMovement>().enabled = true;
+                    tank.GetComponent<EnemyShooting>().enabled = true;
+                }
             }
         }
+
+        timerText.text = tanksDestroyed.ToString();
+        
+        if (IsPlayerDead() || inGame == false) {
+            messageText.gameObject.SetActive(true);
+
+            player.clip = pregameMusic;
+            player.Play();
+
+            if (inGame == false) {
+                timerText.text = "";
+                totalTime.text = "";
+                messageText.text = "Tankinator.";
+            }
+            else if (IsPlayerDead()) {
+                messageText.text = "Tankinator-ed.";
+            }
+
+            endlessHighscores.AddScore(tanksDestroyed);
+            endlessHighscores.SaveScoresToFile();
+
+            playButton.gameObject.SetActive(true);
+            endlessButton.gameObject.SetActive(true);
+            highscoresButton.gameObject.SetActive(true);
+            TankSelectionButton.gameObject.SetActive(true);
+
+            SetTanksActive(tanks.Length, false);
+            inGame = false;
+            tanksDestroyed = 0;
+        }
+    }
+    void SetTankActive(int count, bool active)
+    {
+        count = Mathf.Min(count, tanks.Length);
+
+        for (int i = 0; i < count; i++)
+        {
+            SetTankActive(i, active);
+        }
     }
 
-    bool OneTankLeft() {
+    void SetTanksActive(int index, bool active)
+    {
+        for (int i = 0; i < tanks.Length; i++)
+        {
+            var tank = tanks[i];
+            if (tank == null) continue;
+
+            var materialAccess = tank.GetComponent<MaterialAccess>();
+            if (materialAccess == null || materialAccess.meshes == null) continue;
+
+
+            foreach (MeshRenderer rend in materialAccess.meshes)
+            {
+                if (rend == null) continue;
+
+                if (tank.CompareTag("Player"))
+                {
+                    tank.tag = "Player";
+                    rend.material = active ? playerMat : neutralMat;
+
+                    var move = tank.GetComponent<TankMovement>();
+                    var aim = tank.GetComponent<TankAim>();
+                    var shoot = tank.GetComponent<TankShooting>();
+
+                    if (move) move.enabled = active;
+                    if (aim) aim.enabled = active;
+                    if (shoot) shoot.enabled = active;
+                }
+                else
+                {
+                    if (tank.tag == "Enemy") {
+                        tank.GetComponent<EnemyMovement>().enabled = active;
+                        tank.GetComponent<EnemyShooting>().enabled = active;
+                    }
+                }
+            }
+
+            var health = tank.GetComponent<TankHealth>();
+            if (health) health.enabled = active;
+        }
+
+        foreach (var enemy in enemyTanks)
+        {
+            if (!enemy) continue;
+
+            var em = enemy.GetComponent<EnemyMovement>();
+            var es = enemy.GetComponent<EnemyShooting>();
+            var ma = enemy.GetComponent<MaterialAccess>();
+        }
+    }
+
+
+    int TanksLeft() {
         int tankCount = 0;
 
         for (int i = 0; i < tanks.Length; i++) {
             if (tanks[i].activeSelf) tankCount++;
         }
 
-        return tankCount <= 1;
+        return tankCount;
     }
 
     bool IsPlayerDead() {
@@ -212,5 +368,41 @@ public class GameManager : MonoBehaviour {
         }
 
         return false;
+    }
+
+    public void OnTankSelection()
+    {
+        TankSelectionPanel.SetActive(true);
+        TankSelectionButton.gameObject.SetActive(false);
+        playButton.gameObject.SetActive(false);
+        endlessButton.gameObject.SetActive(false);
+        highscoresButton.gameObject.SetActive(false);
+    }
+
+    void CloseTankSeletion()
+    {
+        TankSelectionPanel.SetActive(false);
+        TankSelectionButton.gameObject.SetActive(true);
+        playButton.gameObject.SetActive(true);
+        endlessButton.gameObject.SetActive(true);
+        highscoresButton.gameObject.SetActive(true);
+    }
+
+    int selectedTankIndex = 1;
+    public void SelectLightTank()
+    {
+        selectedTankIndex = 0;
+        LightTank.tag = "Player";
+        CloseTankSeletion();
+    }
+    public void SelectMainTank() {
+        selectedTankIndex = 1;
+        MeduimTank.tag = "Player";
+        CloseTankSeletion();
+    }
+    public void SelectHeavyTank() {
+        selectedTankIndex = 2;
+        HeavyTank.tag = "Player";
+        CloseTankSeletion();
     }
 }
