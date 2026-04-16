@@ -16,7 +16,16 @@ public class GameManager : MonoBehaviour {
     public Button playButton;
     public Button endlessButton;
     public Button highscoresButton;
-    
+  
+    public Button TankSelectionButton;
+
+    public GameObject[] enemyTanks;
+    public GameObject TankSelectionPanel;
+    public GameObject LightTank;
+
+    public GameObject MeduimTank;
+    public GameObject HeavyTank;
+  
     public Transform destructableScenery;
 
     public GameObject[] tanks;
@@ -59,8 +68,9 @@ public class GameManager : MonoBehaviour {
         playButton.gameObject.SetActive(true);
         endlessButton.gameObject.SetActive(true);
         highscoresButton.gameObject.SetActive(true);
+        TankSelectionButton.gameObject.SetActive(true);
 
-        SetTanksActive(false);
+        SetTanksActive(tanks.Length, false);
     }
 
     void Update() {
@@ -136,6 +146,7 @@ public class GameManager : MonoBehaviour {
             playButton.gameObject.SetActive(false);
             endlessButton.gameObject.SetActive(false);
             highscoresButton.gameObject.SetActive(false);
+            TankSelectionButton.gameObject.SetActive(false);
 
             messageText.gameObject.SetActive(false);
 
@@ -144,10 +155,24 @@ public class GameManager : MonoBehaviour {
             gameTime = 0;
             inGame = true;
 
-            SetTanksActive(true);
+            SetTanksActive(tanks.Length, true);
             
             for (int i = 0; i < tanks.Length; i++) {
-                tanks[i].SetActive(true);
+                if (i == selectedTankIndex)
+                {
+                    tanks[i].tag = "Player";
+                    tanks[i].SetActive(true);
+                }
+                else
+                {
+                    tanks[i].tag = "Untagged";
+                    tanks[i].SetActive(false);
+                }
+            }
+
+            foreach (GameObject enemy in enemyTanks)
+            {
+                enemy.SetActive(true);
             }
 
             for (int i = 0; i < destructableScenery.childCount; i++) {
@@ -200,8 +225,9 @@ public class GameManager : MonoBehaviour {
             playButton.gameObject.SetActive(true);
             endlessButton.gameObject.SetActive(true);
             highscoresButton.gameObject.SetActive(true);
+            TankSelectionButton.gameObject.SetActive(true);
 
-            SetTanksActive(false);
+            SetTanksActive(tanks.Length, false);
             inGame = false;
         }
     }
@@ -248,35 +274,74 @@ public class GameManager : MonoBehaviour {
             playButton.gameObject.SetActive(true);
             endlessButton.gameObject.SetActive(true);
             highscoresButton.gameObject.SetActive(true);
+            TankSelectionButton.gameObject.SetActive(true);
 
-            SetTanksActive(false);
+            SetTanksActive(tanks.Length, false);
             inGame = false;
             tanksDestroyed = 0;
         }
     }
+    void SetTankActive(int count, bool active)
+    {
+        count = Mathf.Min(count, tanks.Length);
 
-    void SetTanksActive(bool active) {
-        for (int i = 0; i < tanks.Length; i++) {
-            var tank = tanks[i];
-            var materialAccess = tank.GetComponent<MaterialAccess>();
-
-            foreach (MeshRenderer rend in materialAccess.meshes) {
-                if (tank.CompareTag("Player")) {
-                    rend.material = active ? playerMat : neutralMat;
-                    tank.GetComponent<TankMovement>().enabled = active;
-                    tank.GetComponent<TankAim>().enabled = active;
-                    tank.GetComponent<TankShooting>().enabled = active;
-                }
-                else {
-                    rend.material = active ? enemyMat : neutralMat;
-                    tank.GetComponent<EnemyMovement>().enabled = active;
-                    tank.GetComponent<EnemyShooting>().enabled = active;
-                }
-
-                tank.GetComponent<TankHealth>().enabled = active;
-            }
+        for (int i = 0; i < count; i++)
+        {
+            SetTankActive(i, active);
         }
     }
+
+    void SetTanksActive(int index, bool active)
+    {
+        for (int i = 0; i < tanks.Length; i++)
+        {
+            var tank = tanks[i];
+            if (tank == null) continue;
+
+            var materialAccess = tank.GetComponent<MaterialAccess>();
+            if (materialAccess == null || materialAccess.meshes == null) continue;
+
+
+            foreach (MeshRenderer rend in materialAccess.meshes)
+            {
+                if (rend == null) continue;
+
+                if (tank.CompareTag("Player"))
+                {
+                    tank.tag = "Player";
+                    rend.material = active ? playerMat : neutralMat;
+
+                    var move = tank.GetComponent<TankMovement>();
+                    var aim = tank.GetComponent<TankAim>();
+                    var shoot = tank.GetComponent<TankShooting>();
+
+                    if (move) move.enabled = active;
+                    if (aim) aim.enabled = active;
+                    if (shoot) shoot.enabled = active;
+                }
+                else
+                {
+                    if (tank.tag == "Enemy") {
+                        tank.GetComponent<EnemyMovement>().enabled = active;
+                        tank.GetComponent<EnemyShooting>().enabled = active;
+                    }
+                }
+            }
+
+            var health = tank.GetComponent<TankHealth>();
+            if (health) health.enabled = active;
+        }
+
+        foreach (var enemy in enemyTanks)
+        {
+            if (!enemy) continue;
+
+            var em = enemy.GetComponent<EnemyMovement>();
+            var es = enemy.GetComponent<EnemyShooting>();
+            var ma = enemy.GetComponent<MaterialAccess>();
+        }
+    }
+
 
     int TanksLeft() {
         int tankCount = 0;
@@ -303,5 +368,41 @@ public class GameManager : MonoBehaviour {
         }
 
         return false;
+    }
+
+    public void OnTankSelection()
+    {
+        TankSelectionPanel.SetActive(true);
+        TankSelectionButton.gameObject.SetActive(false);
+        playButton.gameObject.SetActive(false);
+        endlessButton.gameObject.SetActive(false);
+        highscoresButton.gameObject.SetActive(false);
+    }
+
+    void CloseTankSeletion()
+    {
+        TankSelectionPanel.SetActive(false);
+        TankSelectionButton.gameObject.SetActive(true);
+        playButton.gameObject.SetActive(true);
+        endlessButton.gameObject.SetActive(true);
+        highscoresButton.gameObject.SetActive(true);
+    }
+
+    int selectedTankIndex = 1;
+    public void SelectLightTank()
+    {
+        selectedTankIndex = 0;
+        LightTank.tag = "Player";
+        CloseTankSeletion();
+    }
+    public void SelectMainTank() {
+        selectedTankIndex = 1;
+        MeduimTank.tag = "Player";
+        CloseTankSeletion();
+    }
+    public void SelectHeavyTank() {
+        selectedTankIndex = 2;
+        HeavyTank.tag = "Player";
+        CloseTankSeletion();
     }
 }
