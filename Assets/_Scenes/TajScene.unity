@@ -1983,6 +1983,11 @@ MonoBehaviour:
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: 867c8583ec912fe42ac78d1d58d8e78c, type: 2}
   m_BuildHeightMesh: 0
+--- !u!23 &158867110 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 3989780270592894392, guid: b9e7412b6d797a74999f048bbc5a1981, type: 3}
+  m_PrefabInstance: {fileID: 1706742463}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &181223755
 GameObject:
   m_ObjectHideFlags: 0
@@ -2729,6 +2734,11 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 1, z: 0}
   m_TimeToStationary: 0.5
+--- !u!23 &226759154 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 3321175848772362880, guid: b9e7412b6d797a74999f048bbc5a1981, type: 3}
+  m_PrefabInstance: {fileID: 1706742463}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &228979821
 GameObject:
   m_ObjectHideFlags: 0
@@ -3470,7 +3480,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 321452231}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 41330ac501d846e449ac78ca3bf2a4b4, type: 3}
   m_Name: 
@@ -3875,6 +3885,11 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 3.5, y: 4, z: 2.5}
   m_Center: {x: -0.4, y: 2, z: 0}
+--- !u!23 &472865351 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 3435987367044293011, guid: 357fa9b666fb5814aa6a147cbc391eb8, type: 3}
+  m_PrefabInstance: {fileID: 1438816626}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &523054573
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6707,14 +6722,17 @@ MonoBehaviour:
   endlessButton: {fileID: 74805051}
   highscoresButton: {fileID: 2007370257}
   TankSelectionButton: {fileID: 1433823697}
-  enemyTanks: []
+  enemyTanks:
+  - {fileID: 1644184680}
   TankSelectionPanel: {fileID: 1687911835}
-  LighTank: {fileID: 1826705798}
+  LightTank: {fileID: 1826705798}
   MeduimTank: {fileID: 1976555675}
   HeavyTank: {fileID: 1951604968}
   destructableScenery: {fileID: 1111777469}
   tanks:
+  - {fileID: 1826705798}
   - {fileID: 1976555675}
+  - {fileID: 1951604968}
   - {fileID: 1644184680}
   neutralMat: {fileID: 2100000, guid: 8d373ffe3afb68b4dbf0c75902089d93, type: 2}
   enemyMat: {fileID: 2100000, guid: 9b81922e7b6420e47a3588af2eb7eb0d, type: 2}
@@ -10791,6 +10809,11 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 1, z: 0}
   m_TimeToStationary: 0.5
+--- !u!23 &1285809536 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2134432441748745594, guid: 357fa9b666fb5814aa6a147cbc391eb8, type: 3}
+  m_PrefabInstance: {fileID: 1438816626}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1286244732
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12235,13 +12258,37 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1970289884}
     m_Modifications:
+    - target: {fileID: 386932812980686841, guid: 357fa9b666fb5814aa6a147cbc391eb8, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 575962007689891201, guid: 357fa9b666fb5814aa6a147cbc391eb8, type: 3}
+      propertyPath: meshes.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 575962007689891201, guid: 357fa9b666fb5814aa6a147cbc391eb8, type: 3}
+      propertyPath: meshes.Array.data[0]
+      value: 
+      objectReference: {fileID: 1285809536}
+    - target: {fileID: 575962007689891201, guid: 357fa9b666fb5814aa6a147cbc391eb8, type: 3}
+      propertyPath: meshes.Array.data[1]
+      value: 
+      objectReference: {fileID: 472865351}
+    - target: {fileID: 1162571193129761878, guid: 357fa9b666fb5814aa6a147cbc391eb8, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3689911153903597717, guid: 357fa9b666fb5814aa6a147cbc391eb8, type: 3}
       propertyPath: m_Name
       value: Heavy_Tank_Player
       objectReference: {fileID: 0}
     - target: {fileID: 3689911153903597717, guid: 357fa9b666fb5814aa6a147cbc391eb8, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3689911153903597717, guid: 357fa9b666fb5814aa6a147cbc391eb8, type: 3}
+      propertyPath: m_TagString
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 4070939638915441199, guid: 357fa9b666fb5814aa6a147cbc391eb8, type: 3}
       propertyPath: m_LocalPosition.x
@@ -12282,6 +12329,10 @@ PrefabInstance:
     - target: {fileID: 4070939638915441199, guid: 357fa9b666fb5814aa6a147cbc391eb8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7485592078222781736, guid: 357fa9b666fb5814aa6a147cbc391eb8, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -13290,6 +13341,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1615243952}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &1587329068 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 5177562702469034788, guid: b9e7412b6d797a74999f048bbc5a1981, type: 3}
+  m_PrefabInstance: {fileID: 1706742463}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1610428424
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13424,7 +13480,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1905566935308178462, guid: c173de35c613fac42b22262c099af714, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2416644581905289863, guid: c173de35c613fac42b22262c099af714, type: 3}
       propertyPath: maxError
@@ -13432,7 +13488,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2416644581905289863, guid: c173de35c613fac42b22262c099af714, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2416644581905289863, guid: c173de35c613fac42b22262c099af714, type: 3}
       propertyPath: patrolNodes.Array.data[0]
@@ -13452,10 +13508,14 @@ PrefabInstance:
       objectReference: {fileID: 534169876}
     - target: {fileID: 3007981790129228138, guid: c173de35c613fac42b22262c099af714, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3762264984481021126, guid: c173de35c613fac42b22262c099af714, type: 3}
       propertyPath: m_Name
+      value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 3762264984481021126, guid: c173de35c613fac42b22262c099af714, type: 3}
+      propertyPath: m_TagString
       value: Enemy
       objectReference: {fileID: 0}
     - target: {fileID: 3762264984481308902, guid: c173de35c613fac42b22262c099af714, type: 3}
@@ -13913,13 +13973,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1970289884}
     m_Modifications:
+    - target: {fileID: 3079645747737304696, guid: b9e7412b6d797a74999f048bbc5a1981, type: 3}
+      propertyPath: meshes.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3079645747737304696, guid: b9e7412b6d797a74999f048bbc5a1981, type: 3}
+      propertyPath: meshes.Array.data[0]
+      value: 
+      objectReference: {fileID: 158867110}
+    - target: {fileID: 3079645747737304696, guid: b9e7412b6d797a74999f048bbc5a1981, type: 3}
+      propertyPath: meshes.Array.data[1]
+      value: 
+      objectReference: {fileID: 1587329068}
+    - target: {fileID: 3079645747737304696, guid: b9e7412b6d797a74999f048bbc5a1981, type: 3}
+      propertyPath: meshes.Array.data[2]
+      value: 
+      objectReference: {fileID: 226759154}
     - target: {fileID: 4903267313306168631, guid: b9e7412b6d797a74999f048bbc5a1981, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.06
       objectReference: {fileID: 0}
     - target: {fileID: 4903267313306168631, guid: b9e7412b6d797a74999f048bbc5a1981, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.03
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4903267313306168631, guid: b9e7412b6d797a74999f048bbc5a1981, type: 3}
       propertyPath: m_LocalPosition.z
@@ -13953,13 +14029,29 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5083473371732394640, guid: b9e7412b6d797a74999f048bbc5a1981, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5710624835186833293, guid: b9e7412b6d797a74999f048bbc5a1981, type: 3}
       propertyPath: m_Name
       value: Light_Car_Player
       objectReference: {fileID: 0}
     - target: {fileID: 5710624835186833293, guid: b9e7412b6d797a74999f048bbc5a1981, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5710624835186833293, guid: b9e7412b6d797a74999f048bbc5a1981, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 6625155684366626575, guid: b9e7412b6d797a74999f048bbc5a1981, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8682285157937283006, guid: b9e7412b6d797a74999f048bbc5a1981, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -17198,11 +17290,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 875108059879070086, guid: 5e1d888d1a6260b4cbfb6bdbde532c1e, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 875108059879070086, guid: 5e1d888d1a6260b4cbfb6bdbde532c1e, type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 8928374136484907536, guid: 5e1d888d1a6260b4cbfb6bdbde532c1e, type: 3}
       propertyPath: m_Enabled

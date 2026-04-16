@@ -211,7 +211,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5710624835186833293}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7501966ca814e234d891a4bad0e47ea2, type: 3}
   m_Name: 
@@ -225,7 +225,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5710624835186833293}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1fb8d23d5e923464bb9daa6081abed02, type: 3}
   m_Name: 
@@ -257,7 +257,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5710624835186833293}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9c3881cd047cfd64c8c7bbb411c77e86, type: 3}
   m_Name: 
@@ -292,7 +292,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 479d888bae0b065438f7ebf25f6b4872, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meshes: []
+  meshes:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!4 &7852120956977991967 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3420774950830234563, guid: 360f70dd5363d99488ee63b45799a9ef, type: 3}
