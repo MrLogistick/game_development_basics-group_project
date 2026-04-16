@@ -16,22 +16,15 @@ public class GameManager : MonoBehaviour {
     public Button playButton;
     public Button endlessButton;
     public Button highscoresButton;
-  
-    public Button TankSelectionButton;
 
-    public GameObject[] enemyTanks;
-    public GameObject TankSelectionPanel;
-    public GameObject LightTank;
-
-    public GameObject MeduimTank;
-    public GameObject HeavyTank;
-  
     public Transform destructableScenery;
-
     public GameObject[] tanks;
+    public GameObject tanksParent;
+
     float gameTime = 0f;
     public float GameTime { get {return gameTime;} }
     int tanksDestroyed = 0;
+    int currentTanks = 2;
 
     public Material neutralMat;
     public Material enemyMat;
@@ -52,14 +45,6 @@ public class GameManager : MonoBehaviour {
         player.clip = pregameMusic;
         player.Play();
 
-        for (int i = 0; i < tanks.Length; i++) {
-            var materialAccess = tanks[i].GetComponent<MaterialAccess>();
-
-            foreach (MeshRenderer rend in materialAccess.meshes) {
-                rend.material = neutralMat;
-            }
-        }
-
         timerText.text = "";
         totalTime.text = "";
         messageText.text = "Tankinator.";
@@ -68,12 +53,12 @@ public class GameManager : MonoBehaviour {
         playButton.gameObject.SetActive(true);
         endlessButton.gameObject.SetActive(true);
         highscoresButton.gameObject.SetActive(true);
-        TankSelectionButton.gameObject.SetActive(true);
 
-        SetTanksActive(tanks.Length, false);
+        // SetTanksActive(tanks.Length, false, false);
     }
 
     void Update() {
+        // Returns to the title screen on ESC or quits if alreadyy at the title screen.
         if (Input.GetKeyUp(KeyCode.Escape)) {
             if (inGame) {
                 inGame = false;
@@ -86,6 +71,7 @@ public class GameManager : MonoBehaviour {
             }
         }
 
+        // Transfers game states.
         if (inGame) {
             if (endless) Endless();
             else Ingame();
@@ -93,6 +79,7 @@ public class GameManager : MonoBehaviour {
         else Pregame();
     }
 
+    // The highscore button activates and disables the highscore menu.
     public void OnHighscores() {
         messageText.gameObject.SetActive(!messageText.gameObject.activeSelf);
         highscorePanel.SetActive(!highscorePanel.gameObject.activeSelf);
@@ -100,6 +87,7 @@ public class GameManager : MonoBehaviour {
         ViewHighscores();
     }
 
+    // displays endless highscores or regular highscores.
     void ViewHighscores() {
         string text = "";
         
@@ -123,6 +111,8 @@ public class GameManager : MonoBehaviour {
         highscoresText.text = text;
     }
 
+    // Regular and Endless Buttons use this. It plays the game,
+    // or when in highscores view, changes which scores are viewed.
     public void Play(bool endless) {
         this.endless = endless;
 
@@ -131,6 +121,7 @@ public class GameManager : MonoBehaviour {
     }
 
     void Pregame() {
+        // press any key except for mouse buttons function
         // if (Input.anyKeyDown) {
         //     if (Input.GetMouseButton(0) ||
         //         Input.GetMouseButton(1) ||
@@ -139,6 +130,7 @@ public class GameManager : MonoBehaviour {
         //     keyDown = true;
         // }
         
+        // plays the game when {keyDown} is true, usually via a button.
         if (keyDown) {
             keyDown = false;
 
@@ -146,34 +138,22 @@ public class GameManager : MonoBehaviour {
             playButton.gameObject.SetActive(false);
             endlessButton.gameObject.SetActive(false);
             highscoresButton.gameObject.SetActive(false);
-            TankSelectionButton.gameObject.SetActive(false);
 
             messageText.gameObject.SetActive(false);
 
             totalTime.text = "";
 
-            gameTime = 0;
-            inGame = true;
-
-            SetTanksActive(tanks.Length, true);
-            
-            for (int i = 0; i < tanks.Length; i++) {
-                if (i == selectedTankIndex)
-                {
-                    tanks[i].tag = "Player";
-                    tanks[i].SetActive(true);
-                }
-                else
-                {
-                    tanks[i].tag = "Untagged";
+            if (endless) {
+                for (int i = 0; i < tanks.Length; i++) {
                     tanks[i].SetActive(false);
                 }
-            }
 
-            foreach (GameObject enemy in enemyTanks)
-            {
-                enemy.SetActive(true);
+                SetTanksActive(currentTanks, true, false);
             }
+            else SetTanksActive(tanks.Length, true, false);
+
+            gameTime = 0;
+            inGame = true;
 
             for (int i = 0; i < destructableScenery.childCount; i++) {
                 destructableScenery.GetChild(i).gameObject.SetActive(true);
@@ -190,6 +170,7 @@ public class GameManager : MonoBehaviour {
 
         timerText.text = string.Format("{0:00}:{1:00}", seconds / 60, seconds % 60);
 
+        // When the game ends, enter the post-game ui and reset.
         if (IsPlayerDead() || TanksLeft() <= 1 || inGame == false) {
             messageText.gameObject.SetActive(true);
 
@@ -197,21 +178,27 @@ public class GameManager : MonoBehaviour {
             player.Play();
 
             if (inGame == false) {
+                // Executed if the player quits.
                 timerText.text = "";
                 totalTime.text = "";
                 messageText.text = "Tankinator.";
             }
             else if (IsPlayerDead()) {
+                // Executed if the player is dead.
                 messageText.text = "Tankinator-ed.";
             }
             else {
                 if (IsPlayerScratchless()) {
+                    // Executed if the player won without being damaged.
+                    // This will also decrease the seconds by how many enemy tanks there were.
+
                     messageText.text = "Flawless Tankinator.";
 
                     timerText.text += $" - {tanks.Length - 1}";
                     seconds -= tanks.Length - 1;
                 }
                 else {
+                    // Executed if the player won but was damaged.
                     messageText.text = "Master Tankinator.";
                     timerText.text += " - 0";
                 }
@@ -225,34 +212,16 @@ public class GameManager : MonoBehaviour {
             playButton.gameObject.SetActive(true);
             endlessButton.gameObject.SetActive(true);
             highscoresButton.gameObject.SetActive(true);
-            TankSelectionButton.gameObject.SetActive(true);
 
-            SetTanksActive(tanks.Length, false);
+            SetTanksActive(tanks.Length, false, false);
             inGame = false;
         }
     }
 
     void Endless() {
-        if (TanksLeft() < tanks.Length) {
-            for (int i = 0; i < tanks.Length; i++) {
-                GameObject tank;
-                if (!tanks[i].activeSelf && !tanks[i].CompareTag("Player")) {
-                    tanksDestroyed += 1;
-
-                    tank = tanks[i];
-                    tank.SetActive(true);
-
-                    tank.GetComponent<EnemyMovement>().enabled = false;
-                    tank.GetComponent<EnemyShooting>().enabled = false;
-
-                    tank.GetComponent<EnemyMovement>().enabled = true;
-                    tank.GetComponent<EnemyShooting>().enabled = true;
-                }
-            }
-        }
-
         timerText.text = tanksDestroyed.ToString();
-        
+
+        // When the game ends, enter the post-game ui and reset.
         if (IsPlayerDead() || inGame == false) {
             messageText.gameObject.SetActive(true);
 
@@ -274,75 +243,89 @@ public class GameManager : MonoBehaviour {
             playButton.gameObject.SetActive(true);
             endlessButton.gameObject.SetActive(true);
             highscoresButton.gameObject.SetActive(true);
-            TankSelectionButton.gameObject.SetActive(true);
 
-            SetTanksActive(tanks.Length, false);
+            SetTanksActive(tanks.Length, false, false);
             inGame = false;
             tanksDestroyed = 0;
         }
+
+        // when a tank is destroyed, create up to 2 more.
+        if (TanksLeft() < currentTanks) {
+            tanksDestroyed++;
+            if (currentTanks < tanks.Length) currentTanks++;
+
+            SetTanksActive(currentTanks - TanksLeft(), true, true);
+        }
     }
-    void SetTankActive(int count, bool active)
+
+    // runs SetTankActive() for the amount of tanks specified by {count}.
+
+    /// <summary>
+    /// if skipActiveTanks = true, then it will skip past a tank if it is active,
+    /// and move onto another. This is used when wanting to activate a certain
+    /// amount of tanks at one time.
+    /// </summary>
+    void SetTanksActive(int count, bool active, bool skipActiveTanks)
     {
         count = Mathf.Min(count, tanks.Length);
 
-        for (int i = 0; i < count; i++)
-        {
+        for (int i = 0; i < count; i++) {
+            if (tanks[i].activeSelf && skipActiveTanks) {
+                count++;
+
+                if (count > tanks.Length) {
+                    Debug.Log("Maximum Tank Capacity Reached.");
+                    count = tanks.Length;
+                }
+
+                continue;
+            }
+
             SetTankActive(i, active);
         }
     }
 
-    void SetTanksActive(int index, bool active)
+    void SetTankActive(int index, bool active)
     {
-        for (int i = 0; i < tanks.Length; i++)
-        {
-            var tank = tanks[i];
-            if (tank == null) continue;
-
-            var materialAccess = tank.GetComponent<MaterialAccess>();
-            if (materialAccess == null || materialAccess.meshes == null) continue;
-
-
-            foreach (MeshRenderer rend in materialAccess.meshes)
-            {
-                if (rend == null) continue;
-
-                if (tank.CompareTag("Player"))
-                {
-                    tank.tag = "Player";
-                    rend.material = active ? playerMat : neutralMat;
-
-                    var move = tank.GetComponent<TankMovement>();
-                    var aim = tank.GetComponent<TankAim>();
-                    var shoot = tank.GetComponent<TankShooting>();
-
-                    if (move) move.enabled = active;
-                    if (aim) aim.enabled = active;
-                    if (shoot) shoot.enabled = active;
-                }
-                else
-                {
-                    if (tank.tag == "Enemy") {
-                        tank.GetComponent<EnemyMovement>().enabled = active;
-                        tank.GetComponent<EnemyShooting>().enabled = active;
-                    }
-                }
-            }
-
-            var health = tank.GetComponent<TankHealth>();
-            if (health) health.enabled = active;
+        // gets the selected tank with {index}
+        var tank = tanks[index];
+        if (!tank) {
+            Debug.LogWarning($"Tank of index {index} does not exist.");
+            return;
         }
 
-        foreach (var enemy in enemyTanks)
-        {
-            if (!enemy) continue;
+        // gets access to the tank's MaterialAccess script
+        var materialAccess = tank.GetComponent<MaterialAccess>();
+        if (!materialAccess || materialAccess.meshes == null) {
+            Debug.LogWarning($"Tank of index {index} does not have 'MaterialAccess'.");
+            return;
+        }
 
-            var em = enemy.GetComponent<EnemyMovement>();
-            var es = enemy.GetComponent<EnemyShooting>();
-            var ma = enemy.GetComponent<MaterialAccess>();
+        if (active) tank.SetActive(true);
+
+        // enables/disables all of the tank's essential scripts, and their colour.
+        tank.GetComponent<TankHealth>().enabled = active;
+
+        if (tank.CompareTag("Player")) {
+            tank.GetComponent<TankMovement>().enabled = active;
+            tank.GetComponent<TankAim>().enabled = active;
+            tank.GetComponent<TankShooting>().enabled = active;
+
+            foreach (MeshRenderer rend in materialAccess.meshes) {
+                rend.material = active ? playerMat : neutralMat;
+            }
+        }
+        else {
+            tank.GetComponent<EnemyMovement>().enabled = active;
+            tank.GetComponent<EnemyShooting>().enabled = active;
+
+            foreach (MeshRenderer rend in materialAccess.meshes) {
+                rend.material = active ? enemyMat : neutralMat;
+            }
         }
     }
 
-
+    // Checks how man tanks are active and returns the count.
     int TanksLeft() {
         int tankCount = 0;
 
@@ -353,6 +336,7 @@ public class GameManager : MonoBehaviour {
         return tankCount;
     }
 
+    // Checks if the player is dead.
     bool IsPlayerDead() {
         for (int i = 0; i < tanks.Length; i++) {
             if (!tanks[i].activeSelf && tanks[i].CompareTag("Player")) return true;
@@ -361,6 +345,7 @@ public class GameManager : MonoBehaviour {
         return false;
     }
 
+    // Checks if the player has taken any damage.
     bool IsPlayerScratchless() {
         for (int i = 0; i < tanks.Length; i++) {
             if (tanks[i].GetComponent<TankHealth>().scratchless
@@ -368,41 +353,5 @@ public class GameManager : MonoBehaviour {
         }
 
         return false;
-    }
-
-    public void OnTankSelection()
-    {
-        TankSelectionPanel.SetActive(true);
-        TankSelectionButton.gameObject.SetActive(false);
-        playButton.gameObject.SetActive(false);
-        endlessButton.gameObject.SetActive(false);
-        highscoresButton.gameObject.SetActive(false);
-    }
-
-    void CloseTankSeletion()
-    {
-        TankSelectionPanel.SetActive(false);
-        TankSelectionButton.gameObject.SetActive(true);
-        playButton.gameObject.SetActive(true);
-        endlessButton.gameObject.SetActive(true);
-        highscoresButton.gameObject.SetActive(true);
-    }
-
-    int selectedTankIndex = 1;
-    public void SelectLightTank()
-    {
-        selectedTankIndex = 0;
-        LightTank.tag = "Player";
-        CloseTankSeletion();
-    }
-    public void SelectMainTank() {
-        selectedTankIndex = 1;
-        MeduimTank.tag = "Player";
-        CloseTankSeletion();
-    }
-    public void SelectHeavyTank() {
-        selectedTankIndex = 2;
-        HeavyTank.tag = "Player";
-        CloseTankSeletion();
     }
 }

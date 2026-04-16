@@ -276,17 +276,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3762264984481021126}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 80cbd507fdee5d148a962aebb2d4383a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  patrolNodes:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  maxError: 4
+  patrolNodes: []
+  maxError: 1
   staticTime: 2
   closeDist: 8
   turret: {fileID: 3762264984481308908}
@@ -298,7 +294,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3762264984481021126}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 41e146a3cb9e8e346bcf0aa748ebdb66, type: 3}
   m_Name: 

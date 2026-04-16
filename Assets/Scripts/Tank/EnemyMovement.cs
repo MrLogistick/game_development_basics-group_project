@@ -31,25 +31,20 @@ public class EnemyMovement : MonoBehaviour {
         col = GetComponent<SphereCollider>();
         follow = false;
 
-        initialPos = rb.position;
-        initialRot = rb.rotation;
+        initialPos = transform.position;
+        initialRot = transform.rotation;
 
         navAgent.updateRotation = true;
     }
 
     void OnEnable() {
-        try
-        {
+        try {
             player = GameObject.FindGameObjectWithTag("Player").transform;
         }
-        catch {Debug.Log("Couldent find player"); }
+        catch {Debug.LogError($"{gameObject.name} couldn't find the player tank!"); }
 
         rb.isKinematic = false;
-        navAgent.enabled = true;
         navAgent.isStopped = false;
-
-        navAgent.Warp(initialPos);
-        transform.rotation = initialRot;
 
         follow = false;
         fresh = true;
@@ -57,12 +52,13 @@ public class EnemyMovement : MonoBehaviour {
 
     void OnDisable()
     {
-        rb.isKinematic = true;
-        navAgent.isStopped = true;
-        navAgent.enabled = false;
+        navAgent.Warp(initialPos);
+        transform.position = initialPos;
+        transform.rotation = initialRot;
+        print(initialPos);
 
-        rb.velocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
+        rb.isKinematic = true;
+        if (navAgent.isActiveAndEnabled) navAgent.isStopped = true;
     }
 
     void OnTriggerEnter(Collider other) {

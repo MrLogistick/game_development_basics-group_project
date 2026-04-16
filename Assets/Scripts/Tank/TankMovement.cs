@@ -23,14 +23,14 @@ public class TankMovement : MonoBehaviour
     void OnEnable() {
         rb.isKinematic = false;
 
-        rb.position = initialPos;
-        rb.rotation = initialRot;
-
         movementInput = 0;
         turnInput = 0;
     }
 
     void OnDisable()  {
+        rb.position = initialPos;
+        rb.rotation = initialRot;
+
         rb.isKinematic = true;
     }
 
