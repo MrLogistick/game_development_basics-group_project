@@ -8545,16 +8545,16 @@ MonoBehaviour:
   playButton: {fileID: 654277096}
   endlessButton: {fileID: 347341778}
   highscoresButton: {fileID: 657195200}
-  goButton: {fileID: 0}
-  leftButton: {fileID: 0}
-  rightButton: {fileID: 0}
+  goButton: {fileID: 1933871634}
+  leftButton: {fileID: 276901879}
+  rightButton: {fileID: 603150772}
   destructableScenery: {fileID: 62023159}
   tanks: []
   tanksParent: {fileID: 1144845281}
   neutralMat: {fileID: 2100000, guid: 8d373ffe3afb68b4dbf0c75902089d93, type: 2}
   enemyMat: {fileID: 2100000, guid: 9b81922e7b6420e47a3588af2eb7eb0d, type: 2}
   playerMat: {fileID: 2100000, guid: a1b0d289a593ed14985659f9adc74124, type: 2}
-  cam: {fileID: 0}
+  cam: {fileID: 97559633}
   pregameMusic: {fileID: 8300000, guid: 2351c72c043903d40b3b466fa2d460e3, type: 3}
   ingameMusic: {fileID: 8300000, guid: 520a32b45af8b8e4482533a5e0b94ea3, type: 3}
 --- !u!114 &1033408255

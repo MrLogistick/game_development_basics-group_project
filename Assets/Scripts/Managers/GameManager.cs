@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour {
     public Material playerMat;
 
     bool inGame = false;
-    bool pregame = false;
+    bool pregame = true;
     public bool InGame { get {return inGame;} }
 
     bool keyDown;
