@@ -8,7 +8,7 @@ public class CameraControl : MonoBehaviour
     public float scrollSpeed = 10f;
     public float maxSize = 35f;
 
-    Transform target;
+    public Transform target;
 
     Vector3 moveVelocity;
     Vector3 targetPos;

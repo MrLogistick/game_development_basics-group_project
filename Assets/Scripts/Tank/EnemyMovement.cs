@@ -55,7 +55,6 @@ public class EnemyMovement : MonoBehaviour {
         navAgent.Warp(initialPos);
         transform.position = initialPos;
         transform.rotation = initialRot;
-        print(initialPos);
 
         rb.isKinematic = true;
         if (navAgent.isActiveAndEnabled) navAgent.isStopped = true;

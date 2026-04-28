@@ -17,9 +17,13 @@ public class GameManager : MonoBehaviour {
     public Button endlessButton;
     public Button highscoresButton;
 
+    public Button goButton;
+    public Button leftButton;
+    public Button rightButton;
+
     public Transform destructableScenery;
     public GameObject[] tanks;
-    public GameObject tanksParent;
+    public Transform tanksParent;
 
     float gameTime = 0f;
     public float GameTime { get {return gameTime;} }
@@ -31,16 +35,25 @@ public class GameManager : MonoBehaviour {
     public Material playerMat;
 
     bool inGame = false;
+    bool pregame = false;
     public bool InGame { get {return inGame;} }
 
     bool keyDown;
     bool endless;
+    
+    public CameraControl cam;
+    int currentTarget = 0;
 
     AudioSource player;
     public AudioClip pregameMusic;
     public AudioClip ingameMusic;
 
     void Start() {
+        tanks = new GameObject[tanksParent.childCount];
+        for (int i = 0; i < tanksParent.childCount; i++) {
+            tanks[i] = tanksParent.GetChild(i).gameObject;
+        }
+
         player = GetComponent<AudioSource>();
         player.clip = pregameMusic;
         player.Play();
@@ -54,11 +67,11 @@ public class GameManager : MonoBehaviour {
         endlessButton.gameObject.SetActive(true);
         highscoresButton.gameObject.SetActive(true);
 
-        // SetTanksActive(tanks.Length, false, false);
+        SetTanksActive(tanks.Length, false, false);
     }
 
     void Update() {
-        // Returns to the title screen on ESC or quits if alreadyy at the title screen.
+        // Returns to the title screen on ESC or quits if already at the title screen.
         if (Input.GetKeyUp(KeyCode.Escape)) {
             if (inGame) {
                 inGame = false;
@@ -70,6 +83,8 @@ public class GameManager : MonoBehaviour {
                 Application.Quit();
             }
         }
+
+        cam.target = tanks[currentTarget].transform;
 
         // Transfers game states.
         if (inGame) {
@@ -120,6 +135,30 @@ public class GameManager : MonoBehaviour {
         else ViewHighscores();
     }
 
+    public void Fire() {
+        keyDown = true;
+    }
+
+    // On left button pressed, cycle through the players largest to smallest, and reset to last (2) when at first
+    public void Left() {
+        if (currentTarget <= 0) {
+            currentTarget = 2;
+        }
+        else {
+            currentTarget--;
+        }
+    }
+
+    // On ight button pressed, cycle through the players smallest to largest, and reset to first (0) when at last
+    public void Right() {
+        if (currentTarget >= 2) {
+            currentTarget = 0;
+        }
+        else {
+            currentTarget++;
+        }
+    }
+
     void Pregame() {
         // press any key except for mouse buttons function
         // if (Input.anyKeyDown) {
@@ -134,14 +173,34 @@ public class GameManager : MonoBehaviour {
         if (keyDown) {
             keyDown = false;
 
-            highscorePanel.SetActive(false);
-            playButton.gameObject.SetActive(false);
-            endlessButton.gameObject.SetActive(false);
-            highscoresButton.gameObject.SetActive(false);
+            if (pregame) {
+                pregame = false;
 
-            messageText.gameObject.SetActive(false);
+                highscorePanel.SetActive(false);
+                playButton.gameObject.SetActive(false);
+                endlessButton.gameObject.SetActive(false);
+                highscoresButton.gameObject.SetActive(false);
 
-            totalTime.text = "";
+                messageText.gameObject.SetActive(false);
+
+                goButton.gameObject.SetActive(true);
+                leftButton.gameObject.SetActive(true);
+                rightButton.gameObject.SetActive(true);
+
+                totalTime.text = "";
+                return;
+            }
+            else {
+                goButton.gameObject.SetActive(false);
+                leftButton.gameObject.SetActive(false);
+                rightButton.gameObject.SetActive(false);
+
+                for (int i = 0; i < 2; i++) {
+                    if (tanks[i] != tanks[currentTarget]) {
+                        tanks[i] = null;
+                    }
+                }
+            }
 
             if (endless) {
                 for (int i = 0; i < tanks.Length; i++) {
@@ -270,7 +329,9 @@ public class GameManager : MonoBehaviour {
         count = Mathf.Min(count, tanks.Length);
 
         for (int i = 0; i < count; i++) {
-            if (tanks[i].activeSelf && skipActiveTanks) {
+            if (tanks[i] == null && !skipActiveTanks) continue;
+
+            if (tanks[i] == null || tanks[i].activeSelf && skipActiveTanks) {
                 count++;
 
                 if (count > tanks.Length) {
@@ -302,7 +363,6 @@ public class GameManager : MonoBehaviour {
         }
 
         if (active) tank.SetActive(true);
-
         // enables/disables all of the tank's essential scripts, and their colour.
         tank.GetComponent<TankHealth>().enabled = active;
 
@@ -312,6 +372,7 @@ public class GameManager : MonoBehaviour {
             tank.GetComponent<TankShooting>().enabled = active;
 
             foreach (MeshRenderer rend in materialAccess.meshes) {
+                if (!rend) continue;
                 rend.material = active ? playerMat : neutralMat;
             }
         }
@@ -320,6 +381,7 @@ public class GameManager : MonoBehaviour {
             tank.GetComponent<EnemyShooting>().enabled = active;
 
             foreach (MeshRenderer rend in materialAccess.meshes) {
+                if (!rend) continue;
                 rend.material = active ? enemyMat : neutralMat;
             }
         }
