@@ -43,6 +43,7 @@ public class GameManager : MonoBehaviour {
     
     public CameraControl cam;
     int currentTarget = 0;
+    public Transform currentPlayer;
 
     AudioSource player;
     public AudioClip pregameMusic;
@@ -195,9 +196,21 @@ public class GameManager : MonoBehaviour {
                 leftButton.gameObject.SetActive(false);
                 rightButton.gameObject.SetActive(false);
 
-                for (int i = 0; i < 2; i++) {
-                    if (tanks[i] != tanks[currentTarget]) {
+                for (int i = 0; i <= 2; i++) {
+                    if (i != currentTarget) {
                         tanks[i] = null;
+                    }
+                    else
+                    {
+                        currentPlayer = tanks[i].transform;
+                    }
+                }
+                for(int i = 3; i < tanks.Length; i++ )
+                {
+                    if (tanks[i].TryGetComponent<EnemyMovement>(out var enemyMovement))
+                    {
+                        enemyMovement.player = currentPlayer;
+                        tanks[i].GetComponent<EnemyShooting>().player = currentPlayer;
                     }
                 }
             }
@@ -274,6 +287,12 @@ public class GameManager : MonoBehaviour {
 
             SetTanksActive(tanks.Length, false, false);
             inGame = false;
+            pregame = true;
+
+            for (int i = 0; i < tanksParent.childCount; i++)
+            {
+                tanks[i] = tanksParent.GetChild(i).gameObject;
+            }
         }
     }
 
@@ -306,6 +325,12 @@ public class GameManager : MonoBehaviour {
             SetTanksActive(tanks.Length, false, false);
             inGame = false;
             tanksDestroyed = 0;
+            pregame = true;
+
+            for (int i = 0; i < tanksParent.childCount; i++)
+            {
+                tanks[i] = tanksParent.GetChild(i).gameObject;
+            }
         }
 
         // when a tank is destroyed, create up to 2 more.
@@ -315,6 +340,7 @@ public class GameManager : MonoBehaviour {
 
             SetTanksActive(currentTanks - TanksLeft(), true, true);
         }
+
     }
 
     // runs SetTankActive() for the amount of tanks specified by {count}.
@@ -392,6 +418,7 @@ public class GameManager : MonoBehaviour {
         int tankCount = 0;
 
         for (int i = 0; i < tanks.Length; i++) {
+            if (tanks[i] == null) continue;
             if (tanks[i].activeSelf) tankCount++;
         }
 
@@ -401,7 +428,8 @@ public class GameManager : MonoBehaviour {
     // Checks if the player is dead.
     bool IsPlayerDead() {
         for (int i = 0; i < tanks.Length; i++) {
-            if (!tanks[i].activeSelf && tanks[i].CompareTag("Player")) return true;
+            if (tanks[i] == null) continue;
+            if (!tanks[i].activeSelf && i == currentTarget) return true;
         }
 
         return false;
@@ -410,8 +438,9 @@ public class GameManager : MonoBehaviour {
     // Checks if the player has taken any damage.
     bool IsPlayerScratchless() {
         for (int i = 0; i < tanks.Length; i++) {
+            if (tanks[i] == null) continue;
             if (tanks[i].GetComponent<TankHealth>().scratchless
-                && tanks[i].CompareTag("Player")) return true;
+                && tanks[i] == currentPlayer) return true;
         }
 
         return false;

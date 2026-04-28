@@ -3,6 +3,7 @@ using UnityEngine;
 public class EnemyShooting : TankShooting {
 
     public float shotDelay = 1f;
+    public Transform player;
 
     bool canShoot;
     float shotTimer;
@@ -27,12 +28,12 @@ public class EnemyShooting : TankShooting {
     }
 
     void OnTriggerEnter(Collider other) {
-        if (!other.CompareTag("Player")) return;
+        if (other.transform != player) return;
         canShoot = true;
     }
 
     void OnTriggerExit(Collider other) {
-        if (!other.CompareTag("Player")) return;
+        if (other.transform != player) return;
         canShoot = false;
     }
 }

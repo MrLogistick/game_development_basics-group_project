@@ -14,7 +14,7 @@ public class EnemyMovement : MonoBehaviour {
 
     public float turnSpeed;
 
-    Transform player;
+    public Transform player;
     NavMeshAgent navAgent;
     Rigidbody rb;
     SphereCollider col;
@@ -38,10 +38,6 @@ public class EnemyMovement : MonoBehaviour {
     }
 
     void OnEnable() {
-        try {
-            player = GameObject.FindGameObjectWithTag("Player").transform;
-        }
-        catch {Debug.LogError($"{gameObject.name} couldn't find the player tank!"); }
 
         rb.isKinematic = false;
         navAgent.isStopped = false;
