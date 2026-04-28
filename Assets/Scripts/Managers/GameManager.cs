@@ -217,9 +217,9 @@ public class GameManager : MonoBehaviour {
 
             if (endless) {
                 for (int i = 0; i < tanks.Length; i++) {
+                    if (tanks[i] == null) continue;
                     tanks[i].SetActive(false);
                 }
-
                 SetTanksActive(currentTanks, true, false);
             }
             else SetTanksActive(tanks.Length, true, false);
@@ -332,11 +332,10 @@ public class GameManager : MonoBehaviour {
                 tanks[i] = tanksParent.GetChild(i).gameObject;
             }
         }
-
         // when a tank is destroyed, create up to 2 more.
         if (TanksLeft() < currentTanks) {
             tanksDestroyed++;
-            if (currentTanks < tanks.Length) currentTanks++;
+            if (currentTanks < tanks.Length -2) currentTanks++;
 
             SetTanksActive(currentTanks - TanksLeft(), true, true);
         }
@@ -355,9 +354,9 @@ public class GameManager : MonoBehaviour {
         count = Mathf.Min(count, tanks.Length);
 
         for (int i = 0; i < count; i++) {
-            if (tanks[i] == null && !skipActiveTanks) continue;
 
-            if (tanks[i] == null || tanks[i].activeSelf && skipActiveTanks) {
+            if (tanks[i] == null || (tanks[i].activeSelf && skipActiveTanks)) {
+                print("something");
                 count++;
 
                 if (count > tanks.Length) {
